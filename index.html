@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mafu Wiki</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+outline:none;
+}
+
+body{
+background:#0f0f14;
+color:white;
+overflow-x:hidden;
+transition:opacity 0.4s ease;
+}
+
+a{
+text-decoration:none;
+color:inherit;
+}
+
+button{
+cursor:pointer;
+border:none;
+}
+
+.fade{
+animation:fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:20px 40px;
+background:#14141c;
+box-shadow:0 0 20px rgba(0,0,0,0.6);
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.logo img{
+height:50px;
+}
+
+nav{
+display:flex;
+gap:25px;
+}
+
+nav button{
+background:#1b1b24;
+color:white;
+padding:10px 20px;
+border-radius:8px;
+transition:0.3s;
+}
+
+nav button:hover{
+background:#29293a;
+transform:translateY(-2px);
+}
+
+.section{
+display:none;
+padding:40px;
+animation:fadeIn 0.5s ease;
+}
+
+.active{
+display:block;
+}
+
+.search-box{
+margin-bottom:20px;
+}
+
+.search-box input{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:none;
+background:#1c1c28;
+color:white;
+}
+
+.chart-card{
+background:#1b1b26;
+border-radius:12px;
+padding:15px;
+margin-bottom:20px;
+display:flex;
+gap:15px;
+position:relative;
+transition:0.3s;
+}
+
+.chart-card:hover{
+transform:scale(1.02);
+background:#222233;
+}
+
+.chart-card img{
+width:120px;
+border-radius:10px;
+}
+
+.lock{
+position:absolute;
+top:8px;
+right:8px;
+font-size:20px;
+color:white;
+}
+
+.difficulty{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.difficulty img{
+width:40px;
+}
+
+.empty{
+opacity:0.7;
+margin-top:20px;
+}
+
+.form-box{
+background:#1b1b26;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+}
+
+.form-box input, .form-box select{
+width:100%;
+margin-bottom:10px;
+padding:10px;
+border:none;
+border-radius:6px;
+background:#232336;
+color:white;
+}
+
+.form-box button{
+background:#5c5cff;
+padding:10px;
+border-radius:6px;
+color:white;
+}
+
+.team-member{
+margin-bottom:10px;
+}
+
+.translate{
+background:#29293a;
+padding:6px 10px;
+border-radius:6px;
+}
+
+</style>
+</head>
+<body class="fade">
+
+<header>
+<div class="logo">
+<img src="21 Sem Título_20260220155521.png">
+<h2>Mafu Wiki</h2>
+</div>
+
+<nav>
+<button onclick="showSection('charts')">Charts</button>
+<button onclick="showSection('recharts')">Re-Charts</button>
+<button onclick="showSection('append')">New Append Difficulties</button>
+<button onclick="showSection('team')">Team</button>
+<button class="translate" onclick="toggleLang()">EN / JP</button>
+</nav>
+</header>
+
+<!-- CHARTS -->
+<div id="charts" class="section active">
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search chart..." onkeyup="searchCharts()">
+</div>
+
+<div id="chartList"></div>
+<div id="noResult" class="empty" style="display:none;">
+no charts yet... What about make yours?
+<button onclick="showSubmit()">Submit your chart</button>
+</div>
+
+<div id="submitForm" style="display:none;" class="form-box">
+<h3>Submit your chart</h3>
+<input type="text" id="newName" placeholder="Chart name">
+<input type="text" id="newLevel" placeholder="Level">
+<select id="newDiff">
+<option>Append</option>
+<option>Master</option>
+<option>Expert</option>
+<option>Hard</option>
+</select>
+<input type="text" id="newLink" placeholder="Chart link (required)">
+<input type="file" id="newImage">
+<button onclick="saveChart()">Save</button>
+</div>
+</div>
+
+<!-- RECHARTS -->
+<div id="recharts" class="section">
+<p>There's nothing here... :(</p>
+</div>
+
+<!-- APPEND -->
+<div id="append" class="section">
+<div class="chart-card">
+<img src="af5b943b53f4018b155aecba7d0c2b79.jpg">
+<div>
+<h3>どんな結末がお望みだい？</h3>
+<p>Level: ?</p>
+<div class="difficulty">
+<img src="apd.png">
+<img src="mas.png">
+<img src="exp.png">
+<img src="hard.png">
+</div>
+</div>
+<div class="lock">🔒</div>
+</div>
+</div>
+
+<!-- TEAM -->
+<div id="team" class="section">
+<h3>Team</h3>
+<div class="team-member">myu (@GEKICHUMAI) - Collaborator</div>
+<div class="team-member">Kay - Collaborator</div>
+</div>
+
+<script>
+
+let language="EN";
+
+function toggleLang(){
+if(language==="EN"){
+document.querySelector("#searchInput").placeholder="チャートを検索...";
+language="JP";
+}else{
+document.querySelector("#searchInput").placeholder="Search chart...";
+language="EN";
+}
+}
+
+function showSection(id){
+document.querySelectorAll(".section").forEach(sec=>sec.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+function searchCharts(){
+let input=document.getElementById("searchInput").value.toLowerCase();
+let cards=document.querySelectorAll(".chart-card");
+let found=false;
+
+cards.forEach(card=>{
+let text=card.innerText.toLowerCase();
+if(text.includes(input)){
+card.style.display="flex";
+found=true;
+}else{
+card.style.display="none";
+}
+});
+
+document.getElementById("noResult").style.display=found?"none":"block";
+}
+
+function showSubmit(){
+document.getElementById("submitForm").style.display="block";
+}
+
+function saveChart(){
+let name=document.getElementById("newName").value;
+let level=document.getElementById("newLevel").value;
+let diff=document.getElementById("newDiff").value;
+let link=document.getElementById("newLink").value;
+let image=document.getElementById("newImage").files[0];
+
+if(!link){
+alert("Chart link is required.");
+return;
+}
+
+let reader=new FileReader();
+reader.onload=function(e){
+let charts=JSON.parse(localStorage.getItem("charts")||"[]");
+charts.push({name,level,diff,link,img:e.target.result});
+localStorage.setItem("charts",JSON.stringify(charts));
+loadCharts();
+};
+
+if(image){
+reader.readAsDataURL(image);
+}else{
+let charts=JSON.parse(localStorage.getItem("charts")||"[]");
+charts.push({name,level,diff,link,img:""});
+localStorage.setItem("charts",JSON.stringify(charts));
+loadCharts();
+}
+}
+
+function loadCharts(){
+let charts=JSON.parse(localStorage.getItem("charts")||"[]");
+let list=document.getElementById("chartList");
+list.innerHTML="";
+
+charts.forEach(c=>{
+list.innerHTML+=`
+<div class="chart-card">
+<img src="${c.img}">
+<div>
+<h3>${c.name}</h3>
+<p>Level: ${c.level}</p>
+<p>${c.diff}</p>
+<a href="${c.link}" target="_blank">Open Chart</a>
+</div>
+</div>
+`;
+});
+}
+
+loadCharts();
+
+</script>
+
+</body>
+  </html>
